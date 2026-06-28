@@ -1,16 +1,18 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from django.shortcuts import HttpResponse
 
+
+def frontend(request):
+    """前后端分离的前端入口页面"""
+    return render(request, 'web/index.html')
+
+
 def login(request):
-    # return HttpResponse("Hello World")
-    # 如果在web下的templates文件下没有web文件夹嵌套，就用login.html,如果有web文件夹嵌套，就用web/login.html
     return render(request, 'web/login.html')
-    # return redirect('https://www.baidu.com')
+
 
 def url_list(request):
-
     urls = [
-        # 'https://www.baidu.com',
         'https://www.google.com',
         'https://www.bing.com',
         'https://www.yahoo.com',
@@ -20,8 +22,8 @@ def url_list(request):
         'https://www.aol.com',
         'https://www.altavista.com',
     ]
-
     return render(request, 'web/url_list.html', {'urls': urls})
+
 
 def phone_list(request):
     phones = [
@@ -31,5 +33,4 @@ def phone_list(request):
         {'name': 'Mate 60', 'brand': 'Huawei', 'price': '6999'},
         {'name': 'Xiaomi 14', 'brand': 'Xiaomi', 'price': '3999'},
     ]
-
     return render(request, 'web/phone_list.html', {'phones': phones})

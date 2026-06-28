@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手机管理 - 前后端分离</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            color: #eee;
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+
+        h1 {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #e94560, #f5a623);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            text-align: center;
+            color: #8892b0;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        /* 表单卡片 */
+        .form-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(10px);
+        }
+        .form-card h3 { margin-bottom: 16px; color: #f5a623; font-size: 18px; }
+        .form-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+        .form-group { flex: 1; min-width: 150px; }
+        .form-group label { display: block; font-size: 13px; color: #8892b0; margin-bottom: 4px; }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.06);
+            color: #eee;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: #e94560;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #e94560, #f5a623);
+            color: #fff;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(233,69,96,0.4); }
+        .btn-danger { background: rgba(233,69,96,0.2); color: #e94560; border: 1px solid rgba(233,69,96,0.3); }
+        .btn-danger:hover { background: rgba(233,69,96,0.3); }
+        .btn-sm { padding: 6px 14px; font-size: 13px; }
+        .btn-edit { background: rgba(245,166,35,0.2); color: #f5a623; border: 1px solid rgba(245,166,35,0.3); }
+        .btn-edit:hover { background: rgba(245,166,35,0.3); }
+
+        /* 列表 */
+        .table-wrapper {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .table-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .table-header h3 { color: #f5a623; font-size: 18px; }
+        .table-header .count { font-size: 13px; color: #8892b0; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px 24px; font-size: 13px; color: #8892b0; text-transform: uppercase; letter-spacing: 1px; }
+        td { padding: 14px 24px; border-top: 1px solid rgba(255,255,255,0.05); font-size: 14px; }
+        tr:hover td { background: rgba(255,255,255,0.03); }
+        .price { color: #f5a623; font-weight: 600; }
+        .actions { display: flex; gap: 8px; }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: #8892b0; }
+        .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+        .loading { text-align: center; padding: 60px 20px; color: #8892b0; }
+
+        .toast {
+            position: fixed; top: 20px; right: 20px;
+            padding: 12px 24px; border-radius: 8px; font-size: 14px;
+            z-index: 1000; animation: slideIn 0.3s ease;
+        }
+        .toast-success { background: #27ae60; color: #fff; }
+        .toast-error { background: #e94560; color: #fff; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>手机管理</h1>
+        <p class="subtitle">前后端分离 — Vue.js 风格纯原生 JS + Django REST API</p>
+
+        <!-- 新增/编辑表单 -->
+        <div class="form-card">
+            <h3 id="form-title">新增手机</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>品牌</label>
+                    <input type="text" id="brand" placeholder="如 Apple">
+                </div>
+                <div class="form-group">
+                    <label>型号</label>
+                    <input type="text" id="name" placeholder="如 iPhone 15">
+                </div>
+                <div class="form-group">
+                    <label>价格 (¥)</label>
+                    <input type="number" id="price" placeholder="如 7999" step="0.01">
+                </div>
+            </div>
+            <div class="form-group" style="margin-bottom:12px;">
+                <label>描述</label>
+                <textarea id="description" rows="2" placeholder="可选描述"></textarea>
+            </div>
+            <div style="display:flex;gap:10px;">
+                <button class="btn btn-primary" onclick="savePhone()">保存</button>
+                <button class="btn btn-danger" id="cancel-btn" style="display:none;" onclick="cancelEdit()">取消</button>
+            </div>
+        </div>
+
+        <!-- 手机列表 -->
+        <div class="table-wrapper">
+            <div class="table-header">
+                <h3>手机列表</h3>
+                <span class="count" id="count">加载中...</span>
+            </div>
+            <div id="loading" class="loading">加载中...</div>
+            <table id="phone-table" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>品牌</th>
+                        <th>型号</th>
+                        <th>价格</th>
+                        <th>描述</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+            </table>
+            <div id="empty" class="empty-state" style="display:none;">
+                <div class="icon">📱</div>
+                <p>暂无手机数据，请在上方添加</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API = '/api/phones/';
+        let editingId = null;
+
+        // 加载列表
+        async function loadPhones() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('phone-table').style.display = 'none';
+            document.getElementById('empty').style.display = 'none';
+            try {
+                const res = await fetch(API);
+                const phones = await res.json();
+                const tbody = document.getElementById('table-body');
+                if (phones.length === 0) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('empty').style.display = 'block';
+                } else {
+                    tbody.innerHTML = phones.map(p => `
+                        <tr>
+                            <td>${esc(p.brand)}</td>
+                            <td>${esc(p.name)}</td>
+                            <td class="price">¥${parseFloat(p.price).toFixed(2)}</td>
+                            <td>${esc(p.description || '-')}</td>
+                            <td class="actions">
+                                <button class="btn btn-edit btn-sm" onclick="editPhone(${p.id})">编辑</button>
+                                <button class="btn btn-danger btn-sm" onclick="deletePhone(${p.id})">删除</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('phone-table').style.display = '';
+                }
+                document.getElementById('count').textContent = `共 ${phones.length} 款`;
+            } catch (e) {
+                document.getElementById('loading').textContent = '加载失败，请确保后端已启动';
+            }
+        }
+
+        // 保存
+        async function savePhone() {
+            const data = {
+                brand: document.getElementById('brand').value.trim(),
+                name: document.getElementById('name').value.trim(),
+                price: document.getElementById('price').value.trim(),
+                description: document.getElementById('description').value.trim(),
+            };
+            if (!data.brand || !data.name || !data.price) {
+                showToast('请填写品牌、型号和价格', 'error');
+                return;
+            }
+            try {
+                let res;
+                if (editingId) {
+                    res = await fetch(API + editingId + '/', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data),
+                    });
+                } else {
+                    res = await fetch(API, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data),
+                    });
+                }
+                if (res.ok) {
+                    showToast(editingId ? '更新成功' : '添加成功', 'success');
+                    cancelEdit();
+                    loadPhones();
+                } else {
+                    const err = await res.json();
+                    showToast(JSON.stringify(err), 'error');
+                }
+            } catch (e) {
+                showToast('操作失败: ' + e.message, 'error');
+            }
+        }
+
+        // 编辑
+        async function editPhone(id) {
+            try {
+                const res = await fetch(API + id + '/');
+                const phone = await res.json();
+                document.getElementById('brand').value = phone.brand;
+                document.getElementById('name').value = phone.name;
+                document.getElementById('price').value = phone.price;
+                document.getElementById('description').value = phone.description || '';
+                document.getElementById('form-title').textContent = '编辑手机';
+                document.getElementById('cancel-btn').style.display = '';
+                editingId = id;
+            } catch (e) {
+                showToast('获取详情失败', 'error');
+            }
+        }
+
+        // 取消编辑
+        function cancelEdit() {
+            editingId = null;
+            document.getElementById('form-title').textContent = '新增手机';
+            document.getElementById('cancel-btn').style.display = 'none';
+            document.getElementById('brand').value = '';
+            document.getElementById('name').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('description').value = '';
+        }
+
+        // 删除
+        async function deletePhone(id) {
+            if (!confirm('确认删除该手机？')) return;
+            try {
+                const res = await fetch(API + id + '/', { method: 'DELETE' });
+                if (res.ok) {
+                    showToast('删除成功', 'success');
+                    loadPhones();
+                }
+            } catch (e) {
+                showToast('删除失败', 'error');
+            }
+        }
+
+        function esc(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        function showToast(msg, type) {
+            const t = document.createElement('div');
+            t.className = 'toast toast-' + type;
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2500);
+        }
+
+        loadPhones();
+    </script>
+</body>
+</html>
