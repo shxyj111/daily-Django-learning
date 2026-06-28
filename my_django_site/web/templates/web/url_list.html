@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>URL 列表</title>
+</head>
+<body>
+    <h1>URL 列表</h1>
+        <ul>
+            <!-- for 循环 -->
+            {% for item in urls %}
+                <li>
+                    <!-- 将连接文本变为可点击的超链接 -->
+                    <p><a href="{{ item }}">{{ item }}</a></p>
+                </li>
+            {% endfor %}
+        </ul>
+</body>
+</html>

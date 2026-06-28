@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>手机列表</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Microsoft YaHei", sans-serif; background: #f5f5f5; padding: 20px; }
+        h1 { text-align: center; color: #333; margin-bottom: 20px; }
+        table { width: 100%; max-width: 800px; margin: 0 auto; border-collapse: collapse; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #6a11cb; color: #fff; }
+        tr:hover td { background: #f0f0ff; }
+    </style>
+</head>
+<body>
+    <h1>手机列表</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>品牌</th>
+                <th>型号</th>
+                <th>价格</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for phone in phones %}
+            <tr>
+                <td>{{ phone.brand }}</td>
+                <td>{{ phone.name }}</td>
+                <td>{{ phone.price }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" style="text-align:center;">暂无数据</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <img src="/static/老北京.jpg">
+</body>
+</html>
