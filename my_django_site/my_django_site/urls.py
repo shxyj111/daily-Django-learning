@@ -20,7 +20,10 @@ from web import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/', views.login),
-    path('url_list/', views.url_list),
-    path('phone_list/', views.phone_list),
+    path('login/', views.login, name='login'),
+    path('url_list/', views.url_list, name='url_list'),
+    path('phone_list/', views.phone_list, name='phone_list'),
+    path('phone/add/', views.phone_add, name='phone_add'),
+    path('phone/edit/<int:pk>/', views.phone_edit, name='phone_edit'),
+    path('phone/delete/<int:pk>/', views.phone_delete, name='phone_delete'),
 ]

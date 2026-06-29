@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if phone %}编辑手机{% else %}新增手机{% endif %}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Microsoft YaHei", sans-serif; background: #f0f2f5; padding: 30px; }
+        .container { max-width: 500px; margin: 60px auto; }
+        h1 { text-align: center; color: #333; margin-bottom: 24px; }
+        .card { background: #fff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 6px; color: #555; font-weight: 500; }
+        input { width: 100%; padding: 10px 12px; border: 1px solid #d9d9d9; border-radius: 6px; font-size: 14px; outline: none; transition: 0.2s; }
+        input:focus { border-color: #1890ff; box-shadow: 0 0 0 2px rgba(24,144,255,0.2); }
+        .actions { display: flex; gap: 12px; margin-top: 24px; }
+        .btn {
+            flex: 1; padding: 10px 0; border: none; border-radius: 6px; cursor: pointer;
+            font-size: 15px; text-align: center; text-decoration: none; transition: 0.2s;
+        }
+        .btn-submit { background: #1890ff; color: #fff; }
+        .btn-submit:hover { background: #40a9ff; }
+        .btn-cancel { background: #f5f5f5; color: #666; }
+        .btn-cancel:hover { background: #e8e8e8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{% if phone %}编辑手机{% else %}新增手机{% endif %}</h1>
+        <div class="card">
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="brand">品牌</label>
+                    <input type="text" id="brand" name="brand" value="{{ phone.brand|default:'' }}" required placeholder="请输入品牌，如 Apple">
+                </div>
+                <div class="form-group">
+                    <label for="name">型号</label>
+                    <input type="text" id="name" name="name" value="{{ phone.name|default:'' }}" required placeholder="请输入型号，如 iPhone 15">
+                </div>
+                <div class="form-group">
+                    <label for="price">价格</label>
+                    <input type="number" id="price" name="price" value="{{ phone.price|default:'' }}" required step="0.01" placeholder="请输入价格，如 7999">
+                </div>
+                <div class="actions">
+                    <button type="submit" class="btn btn-submit">保存</button>
+                    <a href="{% url 'phone_list' %}" class="btn btn-cancel">取消</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

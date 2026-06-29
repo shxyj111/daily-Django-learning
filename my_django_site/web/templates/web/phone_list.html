@@ -3,41 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>手机列表</title>
+    <title>手机管理</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: "Microsoft YaHei", sans-serif; background: #f5f5f5; padding: 20px; }
+        body { font-family: "Microsoft YaHei", sans-serif; background: #f0f2f5; padding: 30px; }
+        .container { max-width: 900px; margin: 0 auto; }
         h1 { text-align: center; color: #333; margin-bottom: 20px; }
-        table { width: 100%; max-width: 800px; margin: 0 auto; border-collapse: collapse; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #6a11cb; color: #fff; }
-        tr:hover td { background: #f0f0ff; }
+        .toolbar { text-align: right; margin-bottom: 16px; }
+        .btn {
+            display: inline-block; padding: 8px 18px; border: none; border-radius: 6px;
+            cursor: pointer; text-decoration: none; font-size: 14px; transition: 0.2s;
+        }
+        .btn-add { background: #1890ff; color: #fff; }
+        .btn-add:hover { background: #40a9ff; }
+        .btn-edit { background: #faad14; color: #fff; }
+        .btn-edit:hover { background: #ffc53d; }
+        .btn-delete { background: #ff4d4f; color: #fff; }
+        .btn-delete:hover { background: #ff7875; }
+        .btn-sm { padding: 4px 12px; font-size: 13px; }
+
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+        th { background: #001529; color: #fff; font-weight: 500; }
+        tr:hover td { background: #e6f7ff; }
+        .actions { display: flex; gap: 8px; }
+        .empty { text-align: center; color: #999; padding: 40px 0 !important; }
     </style>
 </head>
 <body>
-    <h1>手机列表</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>品牌</th>
-                <th>型号</th>
-                <th>价格</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for phone in phones %}
-            <tr>
-                <td>{{ phone.brand }}</td>
-                <td>{{ phone.name }}</td>
-                <td>{{ phone.price }}</td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="3" style="text-align:center;">暂无数据</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <img src="/static/老北京.jpg">
+    <div class="container">
+        <h1>手机管理</h1>
+        <div class="toolbar">
+            <a href="{% url 'phone_add' %}" class="btn btn-add">+ 新增手机</a>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>品牌</th>
+                    <th>型号</th>
+                    <th>价格</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for phone in phones %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ phone.brand }}</td>
+                    <td>{{ phone.name }}</td>
+                    <td>¥{{ phone.price }}</td>
+                    <td class="actions">
+                        <a href="{% url 'phone_edit' phone.pk %}" class="btn btn-edit btn-sm">编辑</a>
+                        <a href="{% url 'phone_delete' phone.pk %}" class="btn btn-delete btn-sm" onclick="return confirm('确定删除 {{ phone.brand }} {{ phone.name }} 吗？')">删除</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="empty">暂无数据，点击右上角"新增手机"添加</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

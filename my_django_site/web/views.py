@@ -1,16 +1,14 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.shortcuts import HttpResponse
+from web.models import Phone
+
 
 def login(request):
-    # return HttpResponse("Hello World")
-    # 如果在web下的templates文件下没有web文件夹嵌套，就用login.html,如果有web文件夹嵌套，就用web/login.html
     return render(request, 'web/login.html')
-    # return redirect('https://www.baidu.com')
+
 
 def url_list(request):
-
     urls = [
-        # 'https://www.baidu.com',
         'https://www.google.com',
         'https://www.bing.com',
         'https://www.yahoo.com',
@@ -20,16 +18,43 @@ def url_list(request):
         'https://www.aol.com',
         'https://www.altavista.com',
     ]
-
     return render(request, 'web/url_list.html', {'urls': urls})
 
-def phone_list(request):
-    phones = [
-        {'name': 'iPhone 15', 'brand': 'Apple', 'price': '7999'},
-        {'name': 'Galaxy S24', 'brand': 'Samsung', 'price': '5999'},
-        {'name': 'Pixel 8', 'brand': 'Google', 'price': '4999'},
-        {'name': 'Mate 60', 'brand': 'Huawei', 'price': '6999'},
-        {'name': 'Xiaomi 14', 'brand': 'Xiaomi', 'price': '3999'},
-    ]
 
+# ========== 手机管理 CRUD ==========
+
+def phone_list(request):
+    """列表页：展示所有手机"""
+    phones = Phone.objects.all()
     return render(request, 'web/phone_list.html', {'phones': phones})
+
+
+def phone_add(request):
+    """新增手机"""
+    if request.method == 'POST':
+        Phone.objects.create(
+            name=request.POST.get('name'),
+            brand=request.POST.get('brand'),
+            price=request.POST.get('price'),
+        )
+        return redirect('phone_list')
+    return render(request, 'web/phone_form.html')
+
+
+def phone_edit(request, pk):
+    """编辑手机"""
+    phone = get_object_or_404(Phone, pk=pk)
+    if request.method == 'POST':
+        phone.name = request.POST.get('name')
+        phone.brand = request.POST.get('brand')
+        phone.price = request.POST.get('price')
+        phone.save()
+        return redirect('phone_list')
+    return render(request, 'web/phone_form.html', {'phone': phone})
+
+
+def phone_delete(request, pk):
+    """删除手机"""
+    phone = get_object_or_404(Phone, pk=pk)
+    phone.delete()
+    return redirect('phone_list')
