@@ -12,7 +12,24 @@
 <div id="app">
     <h1>欢迎学习Vue.js</h1>
     <div>我叫{{name}}，微信{{wechat}}</div>
-    <input type="button" value="点我" v-on:click="clickMe">
+
+    <hr>
+
+    <!-- ====== v-on 知识点 ====== -->
+    <!-- v-on 用于绑定事件，简写为一个 @ -->
+    <h2>v-on 指令</h2>
+
+    <!-- 点击事件（完整写法） -->
+    <input type="button" value="点我（完整写法）" v-on:click="clickMe">
+
+    <!-- 点击事件（简写 @） -->
+    <input type="button" value="点我（简写 @click）" @click="clickMe">
+
+    <!-- 鼠标移入事件 -->
+    <div @mouseenter="showHint" @mouseleave="hideHint" style="display:inline-block;padding:10px;background:#eee;">
+        鼠标移入试试
+    </div>
+    <span>{{hint}}</span>
 
     <hr>
 
@@ -38,6 +55,45 @@
     <!-- 输入框：输入什么，下面立刻显示什么 -->
     <input type="text" v-model="message" placeholder="输入内容试试">
     <div>你输入的是：{{message}}</div>
+
+    <hr>
+
+    <!-- ====== v-for 知识点 ====== -->
+    <!-- v-for 用于遍历数组或对象，循环渲染列表 -->
+    <h2>v-for 指令</h2>
+
+    <ul>
+        <li v-for="item in users">姓名：{{item.name}}，年龄：{{item.age}}</li>
+    </ul>
+
+    <hr>
+
+    <!-- ====== v-if 知识点 ====== -->
+    <!-- v-if 根据条件决定元素是否渲染 -->
+    <h2>v-if 指令</h2>
+
+    <!-- 点击按钮切换显示/隐藏 -->
+    <input type="button" value="切换显示" @click="isShow = !isShow">
+
+    <div v-if="isShow">v-if：条件为 true 时显示</div>
+    <div v-else>v-else：条件为 false 时显示</div>
+
+    <!-- v-else-if 多条件判断 -->
+    <div v-if="score >= 90">优秀</div>
+    <div v-else-if="score >= 60">及格</div>
+    <div v-else>不及格</div>
+    <div>当前分数：{{score}}（修改 data 中 score 的值看看效果）</div>
+
+    <hr>
+
+    <!-- ====== v-show 知识点 ====== -->
+    <!-- v-show 通过 display:none 控制显隐，DOM 始终存在 -->
+    <h2>v-show 指令</h2>
+
+    <input type="button" value="切换显示" @click="isVisible = !isVisible">
+    <div v-show="isVisible">你看得见我</div>
+
+    <div>v-if vs v-show：v-if 是销毁/创建 DOM，v-show 只是 display:none。频繁切换用 v-show 性能更好。</div>
 </div>
 
 <script>
@@ -49,14 +105,27 @@
             wechat: 'wupeiqi888',
             tipText: '我是动态绑定的提示',
             linkUrl: 'https://www.baidu.com',
-            message: ''
+            message: '',
+            users: [
+                { name: '张三', age: 25 },
+                { name: '李四', age: 30 },
+                { name: '王五', age: 28 }
+            ],
+            hint: '',
+            isShow: true,
+            score: 85,
+            isVisible: true
         },
         methods: {
             clickMe: function () {
-                // 获取值：this.name
-                // 修改值：this.name = "新值"
                 this.name = "alex";
                 this.wechat = "wupeiqi666";
+            },
+            showHint: function () {
+                this.hint = '鼠标进来了';
+            },
+            hideHint: function () {
+                this.hint = '鼠标出去了';
             }
         }
     })
